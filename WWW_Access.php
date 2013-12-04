@@ -94,7 +94,7 @@ if (isset($_POST['Submit']) or isset($_GET['remove']) or isset($_GET['add'])) {
 
 
 if (isset($SelectedRole)) {
-	echo '<div class="toplink"><a href="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '">' . _('Review Existing Roles') . '</a></div>';
+	echo '<div class="toplink"><a class="toplink" href="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '">' . _('Review Existing Roles') . '</a></div>';
 }
 
 if (isset($SelectedRole)) {

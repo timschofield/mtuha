@@ -486,7 +486,7 @@ function MultipleSelect($FormName, $Name, $Label, $Hint, $AutoFocus = False, $It
 	}
 	echo '<div class="inputdata">';
 	echo '<label for="' . $Name . '" ' . $Visible . '>' . $Label . '</label>';
-	echo '<select ' . $Focus . ' ' . $Required . ' ' . $Visible . ' ' . $EventHandler . ' multiple="multiple" size="5" id="' . $Name . '" name="' . $Name . '">';
+	echo '<select ' . $Focus . ' ' . $Required . ' ' . $Visible . ' ' . $EventHandler . ' multiple="multiple" size="5" id="' . $Name . '" name="' . $Name . '[]">';
 	echo '<option value=""></option>';
 	foreach ($Items as $ID=>$Item) {
 		if (in_array($ID, $Values)) {

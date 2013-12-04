@@ -843,11 +843,11 @@ if (isset($_POST['Submit'])) {
 }
 
 $FormName = 'Stocks1';
+echo '<div class="toplink">
+		<a class="toplink" href="' . $RootPath . '/SelectProduct.php">' . _('Back to Items') . '</a>
+	</div>';
 echo '<form name="' . $FormName . '" onSubmit="return VerifyForm(this);" action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '" method="post" class="noPrint standard">';
 echo '<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />';
-echo '<div class="toplink">
-		<a href="' . $RootPath . '/SelectProduct.php">' . _('Back to Items') . '</a>
-	</div>';
 echo '<p class="page_title_text noPrint" >
 		<img src="' . $RootPath . '/css/' . $Theme . '/images/inventory.png" title="' . $Title . '" alt="' . $Title . '" />' . ' ' . $Title . '
 	</p>';

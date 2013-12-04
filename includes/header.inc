@@ -96,7 +96,7 @@ if (isset($Title)) {
 	echo '<input type="hidden" name="Theme" id="Theme" value="' . $Theme . '" />';
 	echo '<ul>
 			<div class="HeaderToolBar">
-					<a style="float:left" href="UserSettings.php"><img id="action" src="' . $RootPath . '/css/' . $Theme . '/images/user.png" alt="' . _('User settings') . '" title="' . _('Adjust user settings for') . ' ' . $_SESSION['UsersRealName'] . '" /></a>
+					<a class="ImageLink" style="float:left" href="UserSettings.php"><img id="action" src="' . $RootPath . '/css/' . $Theme . '/images/user.png" alt="' . _('User settings') . '" title="' . _('Adjust user settings for') . ' ' . $_SESSION['UsersRealName'] . '" /></a>
 				<ul class="menu">';
 	foreach ($_SESSION['AllowedPageSecurityTokens'] as $SecurityToken) {
 		if ($SecurityToken != 0 and $SecurityToken < 1000) {
@@ -109,7 +109,7 @@ if (isset($Title)) {
 								WHERE pagesecurity='" . $SecurityToken . "'
 									AND description<>''";
 			$ScriptsResult = DB_query($ScriptsSQL, $db);
-			echo '<li><a href="#"><img src="' . $RootPath . '/css/' . $Theme . '/images/' . $SecurityToken . '.png" title="" alt="' . $SecurityToken . '" /></a>';
+			echo '<li><a class="ImageLink" href="#"><img src="' . $RootPath . '/css/' . $Theme . '/images/' . $SecurityToken . '.png" title="" alt="' . $SecurityToken . '" /></a>';
 			echo '<ul>';
 			while ($ScriptsRow = DB_fetch_array($ScriptsResult)) {
 				if (file_exists($ScriptsRow['script'])) {
@@ -124,9 +124,9 @@ if (isset($Title)) {
 	echo '</ul>
 		<div class="right">';
 	if (isset($SystemAdministrator) and in_array($SystemAdministrator, $_SESSION['AllowedPageSecurityTokens'])) {
-		echo '<a href="" onclick="return edit();"><img id="EditAction" src="' . $RootPath . '/css/' . $Theme . '/images/edit.png" alt="' . _('Edit') . '" /></a>';
+		echo '<a class="ImageLink" href="" onclick="return edit();"><img id="EditAction" src="' . $RootPath . '/css/' . $Theme . '/images/edit.png" alt="' . _('Edit') . '" /></a>';
 	}
-	echo '<a  href="' . $RootPath . '/Logout.php" onclick="return MakeConfirm(\'' . _('Are you sure you wish to logout?') . '\', \'' . _('Confirm Logout') . '\', this);"><img src="' . $RootPath . '/css/' . $Theme . '/images/quit.png" alt="' . _('Logout') . '" /></a>
+	echo '<a class="ImageLink"  href="' . $RootPath . '/Logout.php" onclick="return MakeConfirm(\'' . _('Are you sure you wish to logout?') . '\', \'' . _('Confirm Logout') . '\', this);"><img src="' . $RootPath . '/css/' . $Theme . '/images/quit.png" alt="' . _('Logout') . '" /></a>
 		</div>';
 	echo '<div class="clearfix"></div>
 	</div>

@@ -15,7 +15,6 @@ global $db; // Make sure it IS global, regardless of our context
 $db = mysqli_connect($host, $DBUser, $DBPassword, $_SESSION['DatabaseName'], $DBPort);
 $result = DB_query('SET sql_mode = ANSI', $db);
 
-
 //this statement sets the charset to be used for sending data to and from the db server
 //if not set, both mysqli server and mysqli client/library may assume otherwise
 mysqli_set_charset($db, 'utf8');

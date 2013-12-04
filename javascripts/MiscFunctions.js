@@ -78,7 +78,7 @@ function validateEmail(e) {
 }
 
 function ReloadForm(e) {
-	e.click()
+	document.getElementById(e).click();
 }
 
 function ShowTable(e) {

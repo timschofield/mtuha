@@ -307,24 +307,18 @@ if (isset($_POST['Submit'])) {
 			foreach ($_POST['X_ItemDescriptionLanguages'] as $ItemLanguage) {
 				$ItemDescriptionLanguages .= $ItemLanguage . ',';
 			}
-
-			if ($_SESSION['ItemDescriptionLanguages'] != $ItemDescriptionLanguages) {
-				$sql[] = "UPDATE config SET confvalue='" . $ItemDescriptionLanguages . "' WHERE confname='ItemDescriptionLanguages'";
-			}
+			$sql[] = "UPDATE config SET confvalue='" . $ItemDescriptionLanguages . "' WHERE confname='ItemDescriptionLanguages'";
+			$_SESSION['ItemDescriptionLanguages'] = $ItemDescriptionLanguages;
 		}
 		if ($_SESSION['SmtpSetting'] != $_POST['X_SmtpSetting']) {
 			$sql[] = "UPDATE config SET confvalue = '" . $_POST['X_SmtpSetting'] . "' WHERE confname='SmtpSetting'";
 		}
 		$ErrMsg = _('The system configuration could not be updated because');
-		if (sizeof($sql) > 1) {
-			$result = DB_Txn_Begin($db);
-			foreach ($sql as $line) {
-				$result = DB_query($line, $db, $ErrMsg);
-			}
-			$result = DB_Txn_Commit($db);
-		} elseif (sizeof($sql) == 1) {
-			$result = DB_query($sql, $db, $ErrMsg);
+		$result = DB_Txn_Begin($db);
+		foreach ($sql as $line) {
+			$result = DB_query($line, $db, $ErrMsg);
 		}
+		$result = DB_Txn_Commit($db);
 
 		prnMsg(_('System configuration updated'), 'success');
 
@@ -405,9 +399,7 @@ Select($FormName, 'X_AllowOrderLineItemNarrative', _('Order Entry allows Line It
 foreach ($LanguagesArray as $LanguageEntry => $LanguageName) {
 	$Languages[$LanguageEntry] = $LanguageName['LanguageName'];
 }
-if (!isset($_POST['X_ItemDescriptionLanguages'])) {
-	$ItemLanguages = explode(',', $_SESSION['ItemDescriptionLanguages']);
-}
+$ItemLanguages = explode(',', $_SESSION['ItemDescriptionLanguages']);
 MultipleSelect($FormName, 'X_ItemDescriptionLanguages', _('Languages to Maintain Translations for Item Descriptions'), _('Select all the languages for which item description translations are to be maintained.'), False, $Languages, array(), $ItemLanguages);
 
 //'RequirePickingNote'
@@ -608,116 +600,39 @@ Select($FormName, 'X_WikiApp', _('Wiki application'), _('This feature makes KwaM
 
 InputText($FormName, 'X_WikiPath', _('Wiki Path'), _('The path to the wiki installation to form the basis of wiki URLs - or the full URL of the wiki.'), 40, 40, False, array(), $_SESSION['WikiPath'], False);
 
-echo '<tr style="outline: 1px solid"><td>' . _('Geocode Customers and Suppliers') . ':</td>
-		<td><select required="required" minlength="1" name="X_geocode_integration">';
-if ($_SESSION['geocode_integration'] == 1) {
-	echo '<option selected="selected" value="1">' . _('Geocode Integration Enabled') . '</option>';
-	echo '<option value="0">' . _('Geocode Integration Disabled') . '</option>';
-} else {
-	echo '<option selected="selected" value="0">' . _('Geocode Integration Disabled') . '</option>';
-	echo '<option value="1">' . _('Geocode Integration Enabled') . '</option>';
-}
-echo '</select></td>
-		<td>' . _('This feature will give Latitude and Longitude coordinates to customers and suppliers. Requires access to a mapping provider. You must setup this facility under Main Menu - Setup - Geocode Setup. This feature is experimental.') . '</td></tr>';
+$Geocode[0] = _('Geocode Integration Disabled');
+$Geocode[1] = _('Geocode Integration Enabled');
+Select($FormName, 'X_geocode_integration', _('Geocode Customers and Suppliers'), _('This feature will give Latitude and Longitude coordinates to customers and suppliers. Requires access to a mapping provider. You must setup this facility under Main Menu - Setup - Geocode Setup. This feature is experimental.'), False, $Geocode, array(), $_SESSION['geocode_integration']);
 
-echo '<tr style="outline: 1px solid"><td>' . _('Extended Customer Information') . ':</td>
-		<td><select required="required" minlength="1" name="X_Extended_CustomerInfo">';
-if ($_SESSION['Extended_CustomerInfo'] == 1) {
-	echo '<option selected="selected" value="1">' . _('Extended Customer Info Enabled') . '</option>';
-	echo '<option value="0">' . _('Extended Customer Info Disabled') . '</option>';
-} else {
-	echo '<option selected="selected" value="0">' . _('Extended Customer Info Disabled') . '</option>';
-	echo '<option value="1">' . _('Extended Customer Info Enabled') . '</option>';
-}
-echo '</select></td>
-		<td>' . _('This feature will give extended information in the Select Customer screen.') . '</td></tr>';
+$ExtendedCustomerInfo[0] = _('Extended Customer Info Disabled');
+$ExtendedCustomerInfo[1] = _('Extended Customer Info Enabled');
+Select($FormName, 'X_Extended_CustomerInfo', _('Extended Customer Information'), _('This feature will give extended information in the Select Customer screen.'), False, $ExtendedCustomerInfo, array(), $_SESSION['Extended_CustomerInfo']);
 
-echo '<tr style="outline: 1px solid"><td>' . _('Extended Supplier Information') . ':</td>
-		<td><select required="required" minlength="1" name="X_Extended_SupplierInfo">';
-if ($_SESSION['Extended_SupplierInfo'] == 1) {
-	echo '<option selected="selected" value="1">' . _('Extended Supplier Info Enabled') . '</option>';
-	echo '<option value="0">' . _('Extended Supplier Info Disabled') . '</option>';
-} else {
-	echo '<option selected="selected" value="0">' . _('Extended Supplier Info Disabled') . '</option>';
-	echo '<option value="1">' . _('Extended Supplier Info Enabled') . '</option>';
-}
-echo '</select></td>
-		<td>' . _('This feature will give extended information in the Select Supplier screen.') . '</td></tr>';
+$ExtendedSupplierInfo[0] = _('Extended Supplier Info Disabled');
+$ExtendedSupplierInfo[1] = _('Extended Supplier Info Enabled');
+Select($FormName, 'X_Extended_SupplierInfo', _('Extended Supplier Information'), _('This feature will give extended information in the Select Supplier screen.'), False, $ExtendedSupplierInfo, array(), $_SESSION['Extended_SupplierInfo']);
 
-echo '<tr style="outline: 1px solid"><td>' . _('Prohibit GL Journals to Control Accounts') . ':</td>
-	<td><select required="required" minlength="1" name="X_ProhibitJournalsToControlAccounts">';
-if ($_SESSION['ProhibitJournalsToControlAccounts'] == '1') {
-	echo '<option selected="selected" value="1">' . _('Prohibited') . '</option>';
-	echo '<option value="0">' . _('Allowed') . '</option>';
-} else {
-	echo '<option value="1">' . _('Prohibited') . '</option>';
-	echo '<option selected="selected" value="0">' . _('Allowed') . '</option>';
-}
-echo '</select></td><td>' . _('Setting this to prohibited prevents accidentally entering a journal to the automatically posted and reconciled control accounts for creditors (AP) and debtors (AR)') . '</td></tr>';
-
-
-echo '<tr style="outline: 1px solid">
-		<td>' . _('Prohibit GL Journals to Periods Prior To') . ':</td>
-		<td><select required="required" minlength="1" name="X_ProhibitPostingsBefore">';
+$ProhibitJournals[0] = _('Allowed');
+$ProhibitJournals[1] = _('Prohibited');
+Select($FormName, 'X_ProhibitJournalsToControlAccounts', _('Prohibit GL Journals to Control Accounts'), _('Setting this to prohibited prevents accidentally entering a journal to the automatically posted and reconciled control accounts for creditors (AP) and debtors (AR)'), False, $ProhibitJournals, array(), $_SESSION['ProhibitJournalsToControlAccounts']);
 
 $sql = "SELECT lastdate_in_period FROM periods orDER BY periodno DESC";
 $ErrMsg = _('Could not load periods table');
 $result = DB_query($sql, $db, $ErrMsg);
-if ($_SESSION['ProhibitPostingsBefore'] == '' or $_SESSION['ProhibitPostingsBefore'] == '1900-01-01' or !isset($_SESSION['ProhibitPostingsBefore'])) {
-	echo '<option selected="selected" value="1900-01-01">' . ConvertSQLDate('1900-01-01') . '</option>';
-}
 while ($PeriodRow = DB_fetch_row($result)) {
-	if ($_SESSION['ProhibitPostingsBefore'] == $PeriodRow[0]) {
-		echo '<option selected="selected" value="' . $PeriodRow[0] . '">' . ConvertSQLDate($PeriodRow[0]) . '</option>';
-	} else {
-		echo '<option value="' . $PeriodRow[0] . '">' . ConvertSQLDate($PeriodRow[0]) . '</option>';
-	}
+	$Periods[$PeriodRow[0]] = ConvertSQLDate($PeriodRow[0]);
 }
-echo '</select></td>
-	<td>' . _('This allows all periods before the selected date to be locked from postings. All postings for transactions dated prior to this date will be posted in the period following this date.') . '</td>
-	</tr>';
+Select($FormName, 'X_ProhibitPostingsBefore', _('Prohibit GL Journals to Periods Prior To'), _('This allows all periods before the selected date to be locked from postings. All postings for transactions dated prior to this date will be posted in the period following this date.'), False, $Periods, array(), $_SESSION['ProhibitPostingsBefore']);
 
-echo '<tr style="outline: 1px solid"><td>' . _('Inventory Costing Method') . ':</td>
-	<td><select required="required" minlength="1" name="X_WeightedAverageCosting">';
+$CostingMethods[0] = _('Standard Costing');
+$CostingMethods[1] = _('Weighted Average Costing');
+Select($FormName, 'X_WeightedAverageCosting', _('Prohibit GL Journals to Control Accounts'), _('KwaMoja allows inventory to be costed based on the weighted average of items in stock or full standard costing with price variances reported. The selection here determines the method used and the general ledger postings resulting from purchase invoices and shipment closing'), False, $CostingMethods, array(), $_SESSION['WeightedAverageCosting']);
 
-if ($_SESSION['WeightedAverageCosting'] == 1) {
-	echo '<option selected="selected" value="1">' . _('Weighted Average Costing') . '</option>';
-	echo '<option value="0">' . _('Standard Costing') . '</option>';
-} else {
-	echo '<option selected="selected" value="0">' . _('Standard Costing') . '</option>';
-	echo '<option value="1">' . _('Weighted Average Costing') . '</option>';
-}
-
-echo '</select></td><td>' . _('KwaMoja allows inventory to be costed based on the weighted average of items in stock or full standard costing with price variances reported. The selection here determines the method used and the general ledger postings resulting from purchase invoices and shipment closing') . '</td></tr>';
-
-echo '<tr style="outline: 1px solid"><td>' . _('Auto Issue Components') . ':</td>
-		<td>
-		<select required="required" minlength="1" name="X_AutoIssue">';
-if ($_SESSION['AutoIssue'] == 0) {
-	echo '<option selected="selected" value="0">' . _('No') . '</option>';
-	echo '<option value="1">' . _('Yes') . '</option>';
-} else {
-	echo '<option selected="selected" value="1">' . _('Yes') . '</option>';
-	echo '<option value="0">' . _('No') . '</option>';
-}
-echo '</select></td><td>' . _('When items are manufactured it is possible for the components of the item to be automatically decremented from stock in accordance with the Bill of Material setting') . '</td></tr>';
-
-echo '<tr style="outline: 1px solid"><td>' . _('Prohibit Negative Stock') . ':</td>
-		<td>
-		<select required="required" minlength="1" name="X_ProhibitNegativeStock">';
-if ($_SESSION['ProhibitNegativeStock'] == 0) {
-	echo '<option selected="selected" value="0">' . _('No') . '</option>';
-	echo '<option value="1">' . _('Yes') . '</option>';
-} else {
-	echo '<option selected="selected" value="1">' . _('Yes') . '</option>';
-	echo '<option value="0">' . _('No') . '</option>';
-}
-echo '</select></td><td>' . _('Setting this parameter to Yes prevents invoicing and the issue of stock if this would result in negative stock. The stock problem must be corrected before the invoice or issue is allowed to be processed.') . '</td></tr>';
+Select($FormName,'X_AutoIssue', _('Auto Issue Components'), _('When items are manufactured it is possible for the components of the item to be automatically decremented from stock in accordance with the Bill of Material setting'), False, $YesNo, array(), False, $_SESSION['AutoIssue']);
+Select($FormName,'X_ProhibitNegativeStock', _('Prohibit Negative Stock'), _('Setting this parameter to Yes prevents invoicing and the issue of stock if this would result in negative stock. The stock problem must be corrected before the invoice or issue is allowed to be processed.'), False, $YesNo, array(), False, $_SESSION['ProhibitNegativeStock']);
 
 //Months of Audit Trail to Keep
-echo '<tr style="outline: 1px solid"><td>' . _('Months of Audit Trail to Retain') . ':</td>
-	<td><input type="text" class="integer" name="X_MonthsAuditTrail" size="3" required="required" minlength="1" maxlength="2" value="' . $_SESSION['MonthsAuditTrail'] . '" /></td><td>' . _('If this parameter is set to 0 (zero) then no audit trail is retained. An audit trail is a log of which users performed which additions updates and deletes of database records. The full SQL is retained') . '</td>
-</tr>';
+InputInteger($FormName, 'X_MonthsAuditTrail', _('Months of Audit Trail to Retain'), _('If this parameter is set to 0 (zero) then no audit trail is retained. An audit trail is a log of which users performed which additions updates and deletes of database records. The full SQL is retained'), False, array(), $_SESSION['MonthsAuditTrail'], False);
 
 //Which messages to log
 $LogMessages[0] = _('None');
@@ -728,31 +643,13 @@ $LogMessages[4] = _('All');
 Select($FormName,'X_LogSeverity', _('Log Severity Level'), _('Choose which Status messages to keep in your log file.'), False, $LogMessages, array(), False, $_SESSION['LogSeverity']);
 
 //Path to keep log files in
-echo '<tr style="outline: 1px solid"><td>' . _('Path to log files') . ':</td>
-	<td><input type="text" name="X_LogPath" size="40" minlength="0" maxlength="79" value="' . $_SESSION['LogPath'] . '" /></td><td>' . _('The path to the directory where the log files will be stored. Note the apache user must have write permissions on this directory.') . '</td>
-</tr>';
+InputText($FormName, 'X_LogPath', _('Path to log files'), _('The path to the directory where the log files will be stored. Note the apache user must have write permissions on this directory.'), 40, 79, False, array(), $_SESSION['LogPath']);
 
 //DefineControlledOnWOEntry
-echo '<tr style="outline: 1px solid"><td>' . _('Controlled Items Defined At Work Order Entry') . ':</td>
-	<td><select required="required" minlength="1" name="X_DefineControlledOnWOEntry">
-	<option ' . ($_SESSION['DefineControlledOnWOEntry'] ? 'selected="selected" ' : '') . 'value="1">' . _('Yes') . '</option>
-	<option ' . (!$_SESSION['DefineControlledOnWOEntry'] ? 'selected="selected" ' : '') . 'value="0">' . _('No') . '</option>
-	</select></td>
-	<td>' . _('When set to yes, controlled items are defined at the time of the work order creation. Otherwise controlled items (serial numbers and batch/roll/lot references) are entered at the time the finished items are received against the work order') . '</td></tr>';
+Select($FormName,'X_DefineControlledOnWOEntry', _('Controlled Items Defined At Work Order Entry'), _('When set to yes, controlled items are defined at the time of the work order creation. Otherwise controlled items (serial numbers and batch/roll/lot references) are entered at the time the finished items are received against the work order'), False, $YesNo, array(), False, $_SESSION['DefineControlledOnWOEntry']);
 
 //AutoCreateWOs
-echo '<tr style="outline: 1px solid"><td>' . _('Auto Create Work Orders') . ':</td>
-		<td>
-		<select required="required" minlength="1" name="X_AutoCreateWOs">';
-
-if ($_SESSION['AutoCreateWOs'] == 0) {
-	echo '<option selected="selected" value="0">' . _('No') . '</option>';
-	echo '<option value="1">' . _('Yes') . '</option>';
-} else {
-	echo '<option selected="selected" value="1">' . _('Yes') . '</option>';
-	echo '<option value="0">' . _('No') . '</option>';
-}
-echo '</select></td><td>' . _('Setting this parameter to Yes will ensure that when a sales order is placed if there is insufficient stock then a new work order is created at the default factory location') . '</td></tr>';
+Select($FormName,'X_AutoCreateWOs', _('Auto Create Work Orders'), _('Setting this parameter to Yes will ensure that when a sales order is placed if there is insufficient stock then a new work order is created at the default factory location'), False, $YesNo, array(), False, $_SESSION['AutoCreateWOs']);
 
 $sql = "SELECT loccode,
 				locationname
@@ -771,7 +668,7 @@ InputEmail($FormName, 'X_InventoryManagerEmail', _('Inventory Manager Email Addr
 
 Select($FormName, 'X_SmtpSetting', _('Using Smtp Mail'), _('The default setting is using mail in default php.ini, if you choose Yes for this selection, you can use the SMTP set in the setup section.'), False, $YesNo, array(), $_SESSION['SmtpSetting']);
 
-SubmitButton( _('Update'), 'Submit', 'submitbutton');
+SubmitButton( _('Update The Mtuha System Settings'), 'Submit', 'submitbutton');
 echo '</form>';
 
 include('includes/footer.inc');
