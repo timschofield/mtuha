@@ -400,7 +400,7 @@ foreach ($LanguagesArray as $LanguageEntry => $LanguageName) {
 	$Languages[$LanguageEntry] = $LanguageName['LanguageName'];
 }
 $ItemLanguages = explode(',', $_SESSION['ItemDescriptionLanguages']);
-MultipleSelect($FormName, 'X_ItemDescriptionLanguages', _('Languages to Maintain Translations for Item Descriptions'), _('Select all the languages for which item description translations are to be maintained.'), False, $Languages, array(), $ItemLanguages);
+MultipleSelect($FormName, 'X_ItemDescriptionLanguages', _('Languages to Maintain Translations for Item Descriptions'), _('Select the languages ​​in which translations of the item description will be maintained. The default language is excluded.'), False, $Languages, array(), $ItemLanguages);
 
 //'RequirePickingNote'
 Select($FormName, 'X_RequirePickingNote', _('A picking note must be produced before an order can be delivered'), _('Select whether or not a picking note must be produced before an order can be delivered to a customer.'), False, $YesNo, array(), $_SESSION['RequirePickingNote']);
