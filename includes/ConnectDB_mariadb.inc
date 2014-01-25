@@ -150,7 +150,7 @@ function DB_free_result(&$ResultIndex) {
 	}
 }
 
-function DB_num_rows(&$ResultIndex) {
+function DB_num_rows($ResultIndex) {
 	return mysqli_num_rows($ResultIndex);
 }
 
