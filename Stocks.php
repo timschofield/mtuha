@@ -25,22 +25,6 @@ if (isset($_GET['StockID'])) {
 	$StockID = '';
 }
 $ItemDescriptionLanguages = explode(',', $_SESSION['ItemDescriptionLanguages']);
-if (isset($_POST['NextItem_x'])) {
-	$Result = DB_query("SELECT stockid FROM stockmaster WHERE stockid>'" . $StockID . "' ORDER BY stockid ASC LIMIT 1", $db);
-	$NextItemRow = DB_fetch_row($Result);
-	$StockID = $NextItemRow[0];
-	foreach ($ItemDescriptionLanguages as $DescriptionLanguage) {
-		unset($_POST['Description_' . str_replace('.', '_', $DescriptionLanguage)]);
-	}
-}
-if (isset($_POST['PreviousItem_x'])) {
-	$Result = DB_query("SELECT stockid FROM stockmaster WHERE stockid<'" . $StockID . "' ORDER BY stockid DESC LIMIT 1", $db);
-	$PreviousItemRow = DB_fetch_row($Result);
-	$StockID = $PreviousItemRow[0];
-	foreach ($ItemDescriptionLanguages as $DescriptionLanguage) {
-		unset($_POST['Description_' . str_replace('.', '_', $DescriptionLanguage)]);
-	}
-}
 
 if (isset($StockID) and !isset($_POST['UpdateCategories'])) {
 	$sql = "SELECT COUNT(stockid)
@@ -203,13 +187,13 @@ if (isset($_POST['Submit'])) {
 		$Errors[$i] = 'Serialised';
 		$i++;
 	}
-	if ($_POST['NextSerialNo'] != 0 and $_POST['Serialised'] == 0) {
+	if (isset($_POST['NextSerialNo']) and $_POST['NextSerialNo'] != 0 and $_POST['Serialised'] == 0) {
 		$InputError = 1;
 		prnMsg(_('The item can only have automatically generated serial numbers if it is a serialised item'), 'error');
 		$Errors[$i] = 'NextSerialNo';
 		$i++;
 	}
-	if ($_POST['NextSerialNo'] != 0 and $_POST['MBFlag'] != 'M') {
+	if (isset($_POST['NextSerialNo']) and $_POST['NextSerialNo'] != 0 and $_POST['MBFlag'] != 'M') {
 		$InputError = 1;
 		prnMsg(_('The item can only have automatically generated serial numbers if it is a manufactured item'), 'error');
 		$Errors[$i] = 'NextSerialNo';
@@ -392,6 +376,9 @@ if (isset($_POST['Submit'])) {
 			if ($InputError == 0) {
 
 				DB_Txn_Begin($db);
+				if (!isset($_POST['NextSerialNo'])) {
+					$_POST['NextSerialNo'] = '';
+				}
 
 				$sql = "UPDATE stockmaster
 						SET longdescription='" . $_POST['LongDescription'] . "',
@@ -843,20 +830,14 @@ if (isset($_POST['Submit'])) {
 }
 
 $FormName = 'Stocks1';
+echo '<form name="' . $FormName . '" onSubmit="return VerifyForm(this);" action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '" method="post" class="noPrint standard">';
+echo '<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />';
 echo '<div class="toplink">
 		<a class="toplink" href="' . $RootPath . '/SelectProduct.php">' . _('Back to Items') . '</a>
 	</div>';
-echo '<form name="' . $FormName . '" onSubmit="return VerifyForm(this);" action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '" method="post" class="noPrint standard">';
-echo '<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />';
 echo '<p class="page_title_text noPrint" >
 		<img src="' . $RootPath . '/css/' . $Theme . '/images/inventory.png" title="' . $Title . '" alt="' . $Title . '" />' . ' ' . $Title . '
 	</p>';
-
-if (isset($StockID) and $StockID != '') {
-	echo '<input class="image" src="css/' . $Theme . '/images/previous.png" type="image" name="PreviousItem" title="' . _('Previous Item') . '" value="" />
-			<label>' . _('Navigate Items') . '</label>
-			<input class="image" src="css/' . $Theme . '/images/next.png" type="image" name="NextItem" title="' . _('Next Item') . '" value="" />';
-}
 
 echo '<input type="hidden" name="New" value="' . $New . '" />';
 
@@ -955,7 +936,7 @@ foreach ($ItemDescriptionLanguages as $DescriptionLanguage) {
 		if (!isset($_POST[$PostVariableName])) {
 			$_POST[$PostVariableName] = '';
 		}
-		InputText($FormName, 'Description', $LanguagesArray[$DescriptionLanguage]['LanguageName'] . ' ' . _('Description') . ' (' . _('short') . '):', _('Description of the item in') . ' ' . $LanguagesArray[$DescriptionLanguage]['LanguageName'] . '.', 52, 50, False, array(), stripslashes($_POST[$PostVariableName]));
+		InputText($FormName, 'Description_' . $DescriptionLanguage, $LanguagesArray[$DescriptionLanguage]['LanguageName'] . ' ' . _('Description') . ' (' . _('short') . '):', _('Description of the item in') . ' ' . $LanguagesArray[$DescriptionLanguage]['LanguageName'] . '.', 52, 50, False, array(), stripslashes($_POST[$PostVariableName]));
 	}
 }
 
@@ -996,7 +977,7 @@ while ($myrow = DB_fetch_array($result)) {
 	$Categories[$myrow['categoryid']] = $myrow['categorydescription'];
 }
 
-Select($FormName, 'CategoryID', _('Category'), _('The stock category that this item belongs to.'), False, $Categories, array());
+Select($FormName, 'CategoryID', _('Category'), _('The stock category that this item belongs to.'), False, $Categories, array(), $_POST['CategoryID']);
 
 if (!isset($_POST['EOQ']) or $_POST['EOQ'] == '') {
 	$_POST['EOQ'] = 0;
@@ -1027,33 +1008,33 @@ if (!isset($_POST['Units'])) {
 while ($UOMRow = DB_fetch_array($UOMResult)) {
 	$Units[$UOMRow['unitname']] = $UOMRow['unitname'];
 }
-Select($FormName, 'Units', _('Units of Measure'), _('The unit of measure that this item will be stocked in.'), False, $Units, array());
-Select($FormName, 'MBFlag', _('Assembly, Kit, Manufactured or Service/Labour'), _('The type of item being created.'), False, $MBFlags, array());
+Select($FormName, 'Units', _('Units of Measure'), _('The unit of measure that this item will be stocked in.'), False, $Units, array(), $_POST['Units']);
+Select($FormName, 'MBFlag', _('Assembly, Kit, Manufactured or Service/Labour'), _('The type of item being created.'), False, $MBFlags, array(), $_POST['MBFlag']);
 
 if (!isset($_POST['Discontinued']) or $_POST['Discontinued'] == '') {
 	$_POST['Discontinued'] = 0;
 }
 $Obsolete[0] = _('Current');
 $Obsolete[1] = _('Obsolete');
-Select($FormName, 'Discontinued', _('Current or Obsolete'), _('Is the part current or has it been discontinued.'), False, $Obsolete, array());
+Select($FormName, 'Discontinued', _('Current or Obsolete'), _('Is the part current or has it been discontinued.'), False, $Obsolete, array(), $_POST['Discontinued']);
 
 $Control[0] = _('No Control');
 $Control[1] = _('Controlled');
 if (!isset($_POST['Controlled']) or $_POST['Controlled'] == '') {
 	$_POST['Controlled'] = 0;
 }
-Select($FormName, 'Controlled', _('Batch, Serial or Lot Control'), _('Is this item batch or serial numbered, or is there no control.'), False, $Control, array());
+Select($FormName, 'Controlled', _('Batch, Serial or Lot Control'), _('Is this item batch or serial numbered, or is there no control.'), False, $Control, array(), $_POST['Controlled']);
 
 $Serial[0] = _('No');
 $Serial[1] = _('Yes');
 if (!isset($_POST['']) or $_POST['Serialised'] == '' or $_POST['Controlled'] == 0) {
 	$_POST['Serialised'] = 0;
 }
-Select($FormName, 'Serialised', _('Serialised'), _('Does the item have individual serial numbers?. Note') . ', ' . _('this has no effect if the item is not Controlled.'), False, $Serial, array());
+Select($FormName, 'Serialised', _('Serialised'), _('Does the item have individual serial numbers?. Note') . ', ' . _('this has no effect if the item is not Controlled.'), False, $Serial, array(), $_POST['Serialised']);
 
 $Perishable[0] = _('No');
 $Perishable[1] = _('Yes');
-Select($FormName, 'Perishable', _('Perishable'), _('Is the item of a perishable nature.'), False, $Serial, array());
+Select($FormName, 'Perishable', _('Perishable'), _('Is the item of a perishable nature.'), False, $Serial, array(), $_POST['Perishable']);
 
 if (!isset($_POST['DecimalPlaces']) or $_POST['DecimalPlaces'] == '') {
 	$_POST['DecimalPlaces'] = 0;
@@ -1083,7 +1064,7 @@ while ($myrow = DB_fetch_array($result)) {
 if (!isset($_POST['TaxCat'])) {
 	$_POST['TaxCat'] = $_SESSION['DefaultTaxCategory'];
 }
-Select($FormName, 'TaxCat', _('Tax Category'), _('Tax Category'), False, $TaxCategories, array());
+Select($FormName, 'TaxCat', _('Tax Category'), _('Tax Category'), False, $TaxCategories, array(), $_POST['TaxCat']);
 
 if (!isset($_POST['Pansize'])) {
 	$_POST['Pansize'] = 0;
@@ -1199,9 +1180,7 @@ if ($New == 1) {
 	echo '<input type="submit" name="UpdateCategories" style="visibility:hidden;width:1px" value="' . _('Categories') . '" />';
 	echo '<br />';
 	prnMsg(_('Only click the Delete button if you are sure you wish to delete the item!') . _('Checks will be made to ensure that there are no stock movements, sales analysis records, sales order items or purchase order items for the item') . '. ' . _('No deletions will be allowed if they exist'), 'warn', _('WARNING'));
-	echo '<br />
-		<br />
-		<input type="submit" name="delete" value="' . _('Delete This Item') . '" onclick="return MakeConfirm(\'' . _('Are You Sure?') . '\');" />';
+	SubmitButton( _('Delete This Item'), 'delete', 'deletebutton');
 }
 
 echo '</form>';
