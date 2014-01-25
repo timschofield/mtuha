@@ -62,6 +62,20 @@ padding:0px;
 margin:0px;
 }
 
+a.editlink {
+background: url("images/link_edit.png") no-repeat 0px 0px transparent;
+padding-left: 15px;
+padding-top:0px;
+padding-bottom:0px;
+}
+
+a.deletelink {
+background: url("images/delete.png") no-repeat 0px 0px transparent;
+padding-left: 15px;
+padding-top:0px;
+padding-bottom:0px;
+}
+
 div.error {
 background-color:#fddbdb;
 color:red;
@@ -139,6 +153,19 @@ div.showElements {
 display: inline;
 }
 
+#result {
+height:100px;
+right:20px;
+top:70px;
+border: solid 2px #008000;
+background:#008000;
+border-radius: 6px;
+padding:6px;
+width:200px;
+display:none;
+position:absolute;
+}
+
 label {
 display: block;
 float: left;
@@ -164,9 +191,14 @@ box-shadow: 1px 1px 0 0 #FFF, 5px 5px 40px 2px #DADADA inset;
 -webkit-box-shadow: 1px 1px 0 0 #FFF, 5px 5px 40px 2px #DADADA inset;
 -webkit-background-clip: padding-box;
 outline:0;
+margin-bottom: 3px;
 }
 
-select{
+textarea {
+padding-right:2px;
+}
+
+select {
 padding: 2px 2px;
 }
 
@@ -223,7 +255,7 @@ font-size: 100%;
 
 form.standard {
 width: 60%;
-padding: 20px;
+padding: 10px;
 background: -webkit-gradient(linear, center top, center bottom, from(#F3F3F3), to(#E8E6E6));
 background-image: linear-gradient(to left top, #F3F3F3, #E8E6E6);
 overflow:auto;
@@ -275,8 +307,13 @@ form textarea:required,input:required,form select:required,input[type=radio]:foc
 border: 1px solid #808080;
 }
 
-#dialog_buttons,td.number,input.number,input.integer {
+#dialog_buttons,td.number {
 text-align:right;
+}
+
+input.number,input.integer {
+text-align:right;
+padding-right: 2px;
 }
 
 input#submitbutton {
@@ -308,6 +345,26 @@ box-shadow: rgba(0, 0, 0, .25) 0 1px 0px;
 }
 
 input#cancelbutton {
+border:2px groove #7c93ba;
+cursor:pointer; /*forces the cursor to change to a hand when the button is hovered*/
+padding: 5px 25px;
+margin-top: 5px;
+margin-right: 5px;
+background-color:#6b6dbb; /*required for browsers that don't support gradients*/
+background: -webkit-gradient(linear, left top, left bottom, from(#D79388), to(#CF1E28));
+background: -webkit-linear-gradient(top, #D79388, #CF1E28);
+background: -moz-linear-gradient(top, #D79388, #CF1E28);
+background: -o-linear-gradient(top, #D79388, #CF1E28);
+background: linear-gradient(top, #D79388, #CF1E28);
+color:#fff;
+font-size:1.1em;
+letter-spacing:.1em;
+font-variant:small-caps;
+border-radius: 0 15px 15px 0;
+box-shadow: rgba(0, 0, 0, .75) 0 2px 6px;
+}
+
+input#deletebutton {
 border:2px groove #7c93ba;
 cursor:pointer; /*forces the cursor to change to a hand when the button is hovered*/
 padding: 5px 25px;
@@ -638,43 +695,65 @@ table {
 width:auto;
 max-width:90%;
 padding-bottom:5px;
-margin:5px auto;
+margin:0px auto;
+border: solid 1px #0D0D5C;
 }
 
-table.selection {
-width:auto;
-max-width:90%;
-border-radius: 5px;
-padding: 5px;
-background:#E2E1F9;
-margin-bottom:1%;
-box-shadow:0 0 5px #000;
+.selection {
+box-shadow: 10px 10px 5px #888888;
+border: solid 1px #C6C6E3;
 }
 
-th {
-background-color:#87CEEB;
-border-radius:3px;
-color:#000;
-padding:3px;
+.selection tr:hover td{
+background-color:#aad6ff;
+cursor: pointer;
 }
 
-th.number {
-text-align:right;
-background-color:#87CEEB;
-color:#FFF;
-}
-
-th.SortableColumn {
-cursor:s-resize;
-}
-
-td {
+.selection td{
+vertical-align:middle;
+background-color:#aaaaff;
+border:1px solid #ffffff;
+border-width:0px 1px 1px 0px;
 text-align:left;
+padding:3px;
+font-size:11px;
+color:#000000;
 }
 
-td.select {
-background-color:#F5F5F5;
-padding:3px;
+.selection tr:last-child td{
+border-width:0px 1px 0px 0px;
+}
+
+.selection tr td:last-child{
+border-width:0px 0px 1px 0px;
+}
+
+.selection tr:last-child td:last-child{
+border-width:0px 0px 0px 0px;
+}
+
+.selection tr:first-child th{
+background:-o-linear-gradient(bottom, #00007f 5%, #00007f 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #00007f), color-stop(1, #00007f) );
+background:-moz-linear-gradient( center top, #00007f 5%, #00007f 100% );
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#00007f", endColorstr="#00007f");	background: -o-linear-gradient(top,#00007f,00007f);
+background-color:#00007f;
+text-align:center;
+border-width:0px 0px 1px 1px;
+font-size:14px;
+color:#C8CED0;
+padding: 5px;
+}
+
+.selection tr:first-child:hover td{
+background-color:#aad6ff;
+}
+
+.selection tr:first-child td:first-child{
+border-width:0px 0px 1px 0px;
+}
+
+.selection tr:first-child td:last-child{
+border-width:0px 0px 1px 1px;
 }
 
 /* http://meyerweb.com/eric/tools/css/reset/
