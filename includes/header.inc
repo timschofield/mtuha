@@ -44,6 +44,7 @@ if ($debug == 1) {
 }
 
 echo '<script type="text/javascript" src = "' . $RootPath . '/javascripts/MiscFunctions.js"></script>';
+echo '<script type="text/javascript" src = "' . $RootPath . '/javascripts/AjaxFunctions.js"></script>';
 echo '<style media="screen">
 			.noPrint{ display: block; }
 			.yesPrint{ display: none !important; }
@@ -109,7 +110,7 @@ if (isset($Title)) {
 								WHERE pagesecurity='" . $SecurityToken . "'
 									AND description<>''";
 			$ScriptsResult = DB_query($ScriptsSQL, $db);
-			echo '<li><a class="ImageLink" href="#"><img src="' . $RootPath . '/css/' . $Theme . '/images/' . $SecurityToken . '.png" title="" alt="' . $SecurityToken . '" /></a>';
+			echo '<li style="color:white;width:auto;"><a class="ImageLink" href="#"><img src="' . $RootPath . '/css/' . $Theme . '/images/' . $SecurityToken . '.png" title="" alt="' . $SecurityToken . '" /></a>';
 			echo '<ul>';
 			while ($ScriptsRow = DB_fetch_array($ScriptsResult)) {
 				if (file_exists($ScriptsRow['script'])) {
@@ -129,8 +130,9 @@ if (isset($Title)) {
 	echo '<a class="ImageLink"  href="' . $RootPath . '/Logout.php" onclick="return MakeConfirm(\'' . _('Are you sure you wish to logout?') . '\', \'' . _('Confirm Logout') . '\', this);"><img src="' . $RootPath . '/css/' . $Theme . '/images/quit.png" alt="' . _('Logout') . '" /></a>
 		</div>';
 	echo '<div class="clearfix"></div>
-	</div>
-</ul>';
+		</div>
+	</ul>';
+	echo '<div id="result"></div>';
 }
 
 ?>
