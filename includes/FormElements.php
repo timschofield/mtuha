@@ -309,7 +309,7 @@ function InputNumber($FormName, $Name, $Label, $Hint, $AutoFocus = False, $Event
 	}
 	echo '<div class="inputdata">';
 	echo '<label for="' . $Name . '" ' . $Visible . '>' . $Label . '</label>';
-	echo '<input type="number" class="number" ' . $EventHandler . ' size="3" ' . $Focus . ' ' . $Required . ' ' . $Visible . ' value="' . $Value . '" id="' . $Name . '" name="' . $Name . '" />';
+	echo '<input type="number" class="number" ' . $EventHandler . ' size="5" ' . $Focus . ' ' . $Required . ' ' . $Visible . ' value="' . $Value . '" id="' . $Name . '" name="' . $Name . '" />';
 	echo '<span>' . $Hint . $Mandatory . '</span>';
 	echo '<div class="hideElements"><input type="checkbox" name="view' . $Name . '" ' . $VisCode . ' />' . _('Show');
 	echo '<input type="checkbox" name="required' . $Name . '" ' . $ReqCode . ' />' . _('Required') . '</div>';
